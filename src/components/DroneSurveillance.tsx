@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, MapPin, Wifi, Crosshair, Layers } from "lucide-react";
+import { 
+  AlertTriangle, 
+  MapPin, 
+  Wifi, 
+  Crosshair, 
+  Layers,
+  BatteryMedium  // Replace Battery with a specific battery icon
+} from "lucide-react";
 import DroneIcon from "./icons/DroneIcon";
 import { Progress } from "@/components/ui/progress";
 import { Device } from "@/types/sentinel-types";
@@ -109,7 +116,7 @@ const DroneSurveillance: React.FC = () => {
                   </div>
                   
                   {/* Battery indicator */}
-                  <div className="absolute top-8 left-8 flex items-center">
+                  {/* <div className="absolute top-8 left-8 flex items-center">
                     <Battery className="h-4 w-4 text-sentinel-purple mr-1" />
                     <div className="w-20 h-1.5 bg-black/60 rounded-full">
                       <div 
@@ -121,7 +128,7 @@ const DroneSurveillance: React.FC = () => {
                         style={{ width: `${activeDrone.battery || 0}%` }}
                       ></div>
                     </div>
-                  </div>
+                  </div> */}
                   
                   {/* Targeting reticle */}
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -212,6 +219,7 @@ const DroneSurveillance: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="text-sm text-gray-400">Battery Status</div>
                   <div className="flex items-center mt-1">
+                    <BatteryMedium className="h-4 w-4 mr-1 text-sentinel-info" /> {/* Use BatteryMedium */}
                     <Progress 
                       value={activeDrone.battery || 0} 
                       className="mr-2" 
