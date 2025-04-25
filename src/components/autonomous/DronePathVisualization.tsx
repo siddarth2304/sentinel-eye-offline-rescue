@@ -1,15 +1,108 @@
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls, Text, useTexture, softShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { Device, Location } from '@/types/sentinel-types';
+
+// Enable soft shadows for better visual quality
+softShadows();
 
 interface DronePathVisualizationProps {
   drones: Device[];
   scanCompleted: string[]; // Array of room IDs that have been scanned
   detectedThreats: Location[]; // Array of threat locations
 }
+
+// Building component
+const Building: React.FC = () => {
+  const buildingRef = useRef<THREE.Group>(null);
+  
+  // Create a simple building structure
+  return (
+    <group ref={buildingRef} position={[0, 0, 0]}>
+      {/* Ground/base */}
+      <mesh receiveShadow position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[20, 20]} />
+        <meshStandardMaterial color="#292c31" />
+      </mesh>
+      
+      {/* First floor */}
+      <mesh receiveShadow castShadow position={[0, 0, 0]}>
+        <boxGeometry args={[18, 0.2, 18]} />
+        <meshStandardMaterial color="#343740" />
+      </mesh>
+      
+      {/* Second floor */}
+      <mesh receiveShadow castShadow position={[0, 3, 0]}>
+        <boxGeometry args={[18, 0.2, 18]} />
+        <meshStandardMaterial color="#343740" />
+      </mesh>
+      
+      {/* Third floor */}
+      <mesh receiveShadow castShadow position={[0, 6, 0]}>
+        <boxGeometry args={[18, 0.2, 18]} />
+        <meshStandardMaterial color="#343740" />
+      </mesh>
+      
+      {/* Roof */}
+      <mesh receiveShadow castShadow position={[0, 9, 0]}>
+        <boxGeometry args={[18, 0.2, 18]} />
+        <meshStandardMaterial color="#414550" />
+      </mesh>
+      
+      {/* Building columns - corners */}
+      {[[-9, -9], [9, -9], [-9, 9], [9, 9]].map((pos, i) => (
+        <mesh key={`column-${i}`} castShadow position={[pos[0], 4.5, pos[1]]}>
+          <boxGeometry args={[1, 9, 1]} />
+          <meshStandardMaterial color="#515561" />
+        </mesh>
+      ))}
+      
+      {/* Building walls */}
+      <mesh castShadow position={[0, 4.5, -9]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[18, 9, 0.3]} />
+        <meshStandardMaterial color="#474a54" opacity={0.9} transparent />
+      </mesh>
+      
+      <mesh castShadow position={[0, 4.5, 9]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[18, 9, 0.3]} />
+        <meshStandardMaterial color="#474a54" opacity={0.9} transparent />
+      </mesh>
+      
+      <mesh castShadow position={[-9, 4.5, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[18, 9, 0.3]} />
+        <meshStandardMaterial color="#474a54" opacity={0.9} transparent />
+      </mesh>
+      
+      <mesh castShadow position={[9, 4.5, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[18, 9, 0.3]} />
+        <meshStandardMaterial color="#474a54" opacity={0.9} transparent />
+      </mesh>
+    </group>
+  );
+};
+
+// Scanning effect component
+const ScanningEffect: React.FC<{ position: [number, number, number] }> = ({ position }) => {
+  const scanRef = useRef<THREE.Mesh>(null);
+  const [scale, setScale] = useState(0.1);
+  
+  useFrame(() => {
+    if (scanRef.current) {
+      setScale(prev => (prev >= 3 ? 0.1 : prev + 0.05));
+      scanRef.current.scale.set(scale, scale, scale);
+      scanRef.current.rotation.y += 0.02;
+    }
+  });
+  
+  return (
+    <mesh ref={scanRef} position={position}>
+      <torusGeometry args={[0.5, 0.02, 16, 100]} />
+      <meshStandardMaterial color="#9b87f5" emissive="#9b87f5" emissiveIntensity={2} transparent opacity={0.7} />
+    </mesh>
+  );
+};
 
 const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
   const lineRef = useRef<THREE.LineSegments>(null);
@@ -41,9 +134,9 @@ const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position
   });
 
   return (
-    <mesh ref={droneRef} position={position}>
+    <mesh ref={droneRef} position={position} castShadow>
       <boxGeometry args={[0.3, 0.1, 0.3]} />
-      <meshStandardMaterial color="#9b87f5" />
+      <meshStandardMaterial color="#9b87f5" emissive="#9b87f5" emissiveIntensity={0.2} />
       {/* Drone propellers */}
       <group position={[0, 0.1, 0]}>
         <mesh position={[0.2, 0, 0.2]}>
@@ -63,6 +156,20 @@ const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position
           <meshStandardMaterial color="#666666" />
         </mesh>
       </group>
+      
+      {/* Light beam */}
+      <spotLight
+        position={[0, -0.1, 0]}
+        angle={0.3}
+        penumbra={0.8}
+        intensity={2}
+        distance={5}
+        castShadow
+        color="#9b87f5"
+      />
+      
+      {/* Scanning effect */}
+      <ScanningEffect position={[0, -0.5, 0]} />
     </mesh>
   );
 };
@@ -83,12 +190,14 @@ const RoomMarker: React.FC<{
       >
         {isScanned ? "✓" : roomId}
       </Text>
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} receiveShadow>
         <boxGeometry args={[1, 0.1, 1]} />
         <meshStandardMaterial 
           color={isScanned ? "#4ade80" : "#94a3b8"} 
           transparent={true}
           opacity={0.3} 
+          emissive={isScanned ? "#4ade80" : "#94a3b8"}
+          emissiveIntensity={0.3}
         />
       </mesh>
     </group>
@@ -106,9 +215,13 @@ const ThreatMarker: React.FC<{ position: [number, number, number] }> = ({ positi
 
   return (
     <group ref={markerRef} position={position}>
-      <mesh>
+      <mesh castShadow>
         <octahedronGeometry args={[0.3]} />
-        <meshStandardMaterial color="#ef4444" />
+        <meshStandardMaterial 
+          color="#ef4444" 
+          emissive="#ef4444"
+          emissiveIntensity={0.5}
+        />
       </mesh>
       <Text
         position={[0, 0.5, 0]}
@@ -119,6 +232,9 @@ const ThreatMarker: React.FC<{ position: [number, number, number] }> = ({ positi
       >
         ⚠️
       </Text>
+      
+      {/* Alert pulse */}
+      <pointLight color="#ef4444" intensity={1} distance={3} />
     </group>
   );
 };
@@ -128,18 +244,29 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
   scanCompleted,
   detectedThreats
 }) => {
-  // Create simulated room positions
-  const rooms = useMemo(() => [
-    { id: "room1", position: [-2, 0, -2] as [number, number, number] },
-    { id: "room2", position: [0, 0, -2] as [number, number, number] },
-    { id: "room3", position: [2, 0, -2] as [number, number, number] },
-    { id: "room4", position: [-2, 0, 0] as [number, number, number] },
-    { id: "room5", position: [0, 0, 0] as [number, number, number] },
-    { id: "room6", position: [2, 0, 0] as [number, number, number] },
-    { id: "room7", position: [-2, 0, 2] as [number, number, number] },
-    { id: "room8", position: [0, 0, 2] as [number, number, number] },
-    { id: "room9", position: [2, 0, 2] as [number, number, number] },
-  ], []);
+  // Create room positions based on floors
+  const rooms = useMemo(() => {
+    const floorRooms = [];
+    
+    // Generate rooms for 3 floors
+    for (let floor = 1; floor <= 3; floor++) {
+      const yPosition = (floor - 1) * 3; // 0, 3, 6
+      
+      floorRooms.push(
+        { id: `room${(floor-1)*9+1}`, position: [-2, yPosition, -2] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+2}`, position: [0, yPosition, -2] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+3}`, position: [2, yPosition, -2] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+4}`, position: [-2, yPosition, 0] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+5}`, position: [0, yPosition, 0] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+6}`, position: [2, yPosition, 0] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+7}`, position: [-2, yPosition, 2] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+8}`, position: [0, yPosition, 2] as [number, number, number], floor },
+        { id: `room${(floor-1)*9+9}`, position: [2, yPosition, 2] as [number, number, number], floor }
+      );
+    }
+    
+    return floorRooms;
+  }, []);
 
   // Create path points for visualization
   const pathPoints = useMemo(() => 
@@ -164,12 +291,19 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
 
   return (
     <div className="w-full h-[400px] bg-black rounded-lg overflow-hidden">
-      <Canvas camera={{ position: [10, 10, 10], fov: 50 }}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
+      <Canvas shadows camera={{ position: [10, 10, 10], fov: 50 }}>
+        <fog attach="fog" args={['#17171b', 15, 25]} />
+        <ambientLight intensity={0.3} />
+        <directionalLight 
+          position={[5, 10, 5]} 
+          intensity={0.8} 
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+        />
         
-        {/* Floor grid */}
-        <gridHelper args={[20, 20, "#666666", "#222222"]} />
+        {/* Building structure */}
+        <Building />
         
         {/* Room markers */}
         {rooms.map((room) => (
@@ -177,7 +311,7 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
             key={room.id}
             position={room.position}
             isScanned={scanCompleted.includes(room.id)}
-            roomId={room.id}
+            roomId={`${room.id.replace("room", "")} (F${room.floor})`}
           />
         ))}
         
@@ -210,7 +344,12 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
           />
         ))}
         
-        <OrbitControls />
+        <OrbitControls 
+          minPolarAngle={0} 
+          maxPolarAngle={Math.PI / 2} 
+          enableZoom={true} 
+          enablePan={true} 
+        />
       </Canvas>
     </div>
   );

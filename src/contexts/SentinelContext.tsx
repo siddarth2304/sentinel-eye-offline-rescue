@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface SentinelContextType {
   devices: Device[];
+  setDevices: React.Dispatch<React.SetStateAction<Device[]>>;
   detections: Detection[];
   alerts: Alert[];
   meshNetwork: MeshNodeData[];
@@ -155,6 +156,7 @@ export function SentinelProvider({ children }: { children: React.ReactNode }) {
     <SentinelContext.Provider
       value={{
         devices,
+        setDevices,
         detections,
         alerts,
         meshNetwork,

@@ -8,15 +8,17 @@ import {
   Wifi, 
   Crosshair, 
   Layers,
-  BatteryMedium  // Using BatteryMedium instead of Battery
+  BatteryMedium
 } from "lucide-react";
 import DroneIcon from "./icons/DroneIcon";
 import { Progress } from "@/components/ui/progress";
 import { Device } from "@/types/sentinel-types";
+import { useToast } from "@/hooks/use-toast";
 
 const DroneSurveillance: React.FC = () => {
-  const { devices, detections } = useSentinel();
+  const { devices, detections, setDevices } = useSentinel();
   const [selectedDrone, setSelectedDrone] = useState<string | null>(null);
+  const { toast } = useToast();
   
   // Filter only drone devices
   const drones = devices.filter(device => device.type === "drone");
@@ -40,6 +42,63 @@ const DroneSurveillance: React.FC = () => {
     return drone.location.room.replace("room", "Room ");
   };
 
+  // Move drone to specific floor
+  const moveDroneToFloor = (floor: number) => {
+    if (!activeDrone) return;
+
+    // Update drone location
+    setDevices(prevDevices => prevDevices.map(device => {
+      if (device.id === activeDrone.id) {
+        // Determine a random room on the selected floor
+        const roomNumber = Math.floor(Math.random() * 9) + 1;
+        const newLocation = {
+          ...device.location,
+          floor: floor,
+          room: `room${roomNumber}`,
+          // Adjust x, y, z coordinates
+          y: floor * 3, // Height based on floor
+          x: 10 + Math.random() * 10, // Random x position
+          z: 10 + Math.random() * 10, // Random z position
+        };
+        
+        toast({
+          title: "Drone Relocated",
+          description: `${device.name} moved to Floor ${floor}, ${newLocation.room.replace("room", "Room ")}`,
+          variant: "default"
+        });
+        
+        return { ...device, location: newLocation };
+      }
+      return device;
+    }));
+  };
+
+  // Return drone to base
+  const returnToBase = () => {
+    if (!activeDrone) return;
+
+    setDevices(prevDevices => prevDevices.map(device => {
+      if (device.id === activeDrone.id) {
+        const newLocation = {
+          floor: 1,
+          room: "base",
+          x: 5,
+          y: 0.5,
+          z: 5
+        };
+        
+        toast({
+          title: "Returning to Base",
+          description: `${device.name} is returning to charging station`,
+          variant: "default"
+        });
+        
+        return { ...device, location: newLocation, battery: Math.min(100, (device.battery || 0) + 20) };
+      }
+      return device;
+    }));
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -48,7 +107,6 @@ const DroneSurveillance: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Drone View */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium flex items-center">
@@ -71,7 +129,6 @@ const DroneSurveillance: React.FC = () => {
           <div className="relative aspect-video bg-black rounded-lg overflow-hidden border border-sentinel-dark">
             {activeDrone ? (
               <div className="relative h-full">
-                {/* Simulated drone camera feed with aerial view */}
                 <div 
                   className="w-full h-full bg-cover bg-center"
                   style={{ 
@@ -80,7 +137,6 @@ const DroneSurveillance: React.FC = () => {
                   }}
                 />
                 
-                {/* Drone UI overlay */}
                 <div className="absolute top-0 left-0 right-0 flex justify-between p-4">
                   <div>
                     <div className="text-xs text-sentinel-purple-light font-mono">
@@ -101,12 +157,8 @@ const DroneSurveillance: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Drone HUD overlay */}
                 <div className="absolute inset-0 pointer-events-none">
-                  {/* Horizon indicator */}
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-0.5 bg-sentinel-purple/50"></div>
-                  
-                  {/* Altitude scale */}
                   <div className="absolute top-1/4 right-8 bottom-1/4 w-1.5 flex flex-col">
                     <div className="flex-1 bg-gradient-to-b from-sentinel-purple/80 to-sentinel-purple/20 rounded"></div>
                     <div 
@@ -114,8 +166,6 @@ const DroneSurveillance: React.FC = () => {
                       style={{ top: `${100 - Math.min(100, activeDrone.location.y / 0.09 * 100)}%` }}
                     ></div>
                   </div>
-                  
-                  {/* Battery indicator */}
                   <div className="absolute top-8 left-8 flex items-center">
                     <BatteryMedium className="h-4 w-4 text-sentinel-purple mr-1" />
                     <div className="w-20 h-1.5 bg-black/60 rounded-full">
@@ -129,8 +179,6 @@ const DroneSurveillance: React.FC = () => {
                       ></div>
                     </div>
                   </div>
-                  
-                  {/* Targeting reticle */}
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                     <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="60" cy="60" r="58" stroke="#9b87f5" strokeWidth="1" strokeOpacity="0.4" />
@@ -141,8 +189,6 @@ const DroneSurveillance: React.FC = () => {
                       <line x1="70" y1="60" x2="90" y2="60" stroke="#9b87f5" strokeWidth="1" />
                     </svg>
                   </div>
-                  
-                  {/* Data readout */}
                   <div className="absolute left-8 bottom-8 text-xs font-mono text-sentinel-purple-light">
                     <div>SPD: {Math.round(Math.random() * 30 + 10)} KM/H</div>
                     <div>DIS: {Math.round(Math.random() * 100 + 50)}M</div>
@@ -150,9 +196,7 @@ const DroneSurveillance: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Detection boxes */}
                 {getDroneDetections(activeDrone.id).map((detection) => {
-                  // Randomize box position
                   const top = 20 + Math.random() * 50;
                   const left = 20 + Math.random() * 60;
                   const width = 60 + Math.random() * 40;
@@ -182,7 +226,6 @@ const DroneSurveillance: React.FC = () => {
                   );
                 })}
                 
-                {/* Scan line effect */}
                 <div className="absolute inset-0 overflow-hidden">
                   <div 
                     className="w-full h-0.5 bg-sentinel-purple/50 opacity-70 animate-scan"
@@ -288,16 +331,28 @@ const DroneSurveillance: React.FC = () => {
               <CardContent className="p-4">
                 <h3 className="text-sm font-medium mb-2">Drone Controls</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm">
+                  <button 
+                    onClick={() => moveDroneToFloor(1)}
+                    className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm transition-colors"
+                  >
                     Move to Floor 1
                   </button>
-                  <button className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm">
+                  <button 
+                    onClick={() => moveDroneToFloor(2)}
+                    className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm transition-colors"
+                  >
                     Move to Floor 2
                   </button>
-                  <button className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm">
+                  <button 
+                    onClick={() => moveDroneToFloor(3)}
+                    className="bg-sentinel-purple/20 text-sentinel-purple hover:bg-sentinel-purple/30 p-2 rounded-md text-sm transition-colors"
+                  >
                     Move to Floor 3
                   </button>
-                  <button className="bg-sentinel-alert/20 text-sentinel-alert hover:bg-sentinel-alert/30 p-2 rounded-md text-sm">
+                  <button 
+                    onClick={returnToBase}
+                    className="bg-sentinel-alert/20 text-sentinel-alert hover:bg-sentinel-alert/30 p-2 rounded-md text-sm transition-colors"
+                  >
                     Return to Base
                   </button>
                 </div>
@@ -306,7 +361,6 @@ const DroneSurveillance: React.FC = () => {
           )}
         </div>
         
-        {/* Drone List */}
         <div>
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardContent className="p-4">
@@ -387,10 +441,8 @@ const DroneSurveillance: React.FC = () => {
                     />
                     <div className="absolute inset-0 bg-sentinel-dark/80"></div>
                     
-                    {/* Building outline */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-3/4 h-3/4 border border-sentinel-purple/60 relative">
-                        {/* Drone markers */}
                         {drones.map(drone => (
                           <div 
                             key={drone.id}
@@ -411,7 +463,6 @@ const DroneSurveillance: React.FC = () => {
                           </div>
                         ))}
                         
-                        {/* Coverage circles */}
                         {drones.filter(d => d.status === "online").map(drone => (
                           <div 
                             key={`coverage-${drone.id}`}
