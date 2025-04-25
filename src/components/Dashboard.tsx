@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Alert, Device } from "@/types/sentinel-types";
@@ -9,7 +10,8 @@ import {
   Users, 
   AlertTriangle,
   Battery, 
-  Clock 
+  Clock,
+  CameraOff  // Add this import
 } from "lucide-react";
 import DroneIcon from "./icons/DroneIcon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
