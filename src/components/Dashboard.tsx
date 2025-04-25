@@ -1,11 +1,8 @@
-
 import React from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Alert, Device } from "@/types/sentinel-types";
 import { 
   Camera, 
-  CameraOff, 
-  Drone, 
   Mic, 
   WifiOff, 
   Bell, 
@@ -14,9 +11,14 @@ import {
   Battery, 
   Clock 
 } from "lucide-react";
+import DroneIcon from "./icons/DroneIcon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+
+const formatTime = (date: Date): string => {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+};
 
 const Dashboard: React.FC = () => {
   const { devices, alerts, detections, togglePause, isPaused, simulationSpeed, setSimulationSpeed } = useSentinel();
@@ -39,10 +41,6 @@ const Dashboard: React.FC = () => {
     .filter(a => !a.acknowledged)
     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
     .slice(0, 5);
-
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
 
   return (
     <div className="p-6 space-y-6">
@@ -183,7 +181,7 @@ const Dashboard: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
               <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mr-2">
-                <Drone className="h-4 w-4 text-sentinel-purple" />
+                <DroneIcon className="h-4 w-4 text-sentinel-purple" />
               </div>
               Drone Status
             </CardTitle>
@@ -262,7 +260,7 @@ const Dashboard: React.FC = () => {
                     <div className="flex items-center">
                       {type === 'camera' && <Camera className="h-4 w-4 mr-2" />}
                       {type === 'audio' && <Mic className="h-4 w-4 mr-2" />}
-                      {type === 'drone' && <Drone className="h-4 w-4 mr-2" />}
+                      {type === 'drone' && <DroneIcon className="h-4 w-4 mr-2" />}
                       <span className="capitalize">{type}s</span>
                     </div>
                     <span>
@@ -294,7 +292,7 @@ const Dashboard: React.FC = () => {
                         {device.type === 'audio' && 
                           <Mic className="h-3.5 w-3.5 mr-1.5 text-sentinel-alert" />}
                         {device.type === 'drone' && 
-                          <Drone className="h-3.5 w-3.5 mr-1.5 text-sentinel-alert" />}
+                          <DroneIcon className="h-3.5 w-3.5 mr-1.5 text-sentinel-alert" />}
                         <span className="truncate max-w-[120px]">{device.name}</span>
                       </div>
                       <Badge 
@@ -324,10 +322,6 @@ interface AlertItemProps {
 
 const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
   const { acknowledgeAlert } = useSentinel();
-  
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
   
   const getAlertBgColor = (level: string) => {
     switch (level) {

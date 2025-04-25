@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Layers3, Camera, Mic, Drone, User, AlertTriangle, Search, Move, Plus, Minus, RotateCcw, User2 } from "lucide-react";
+import { Layers3, Camera, Mic, User, AlertTriangle, Search, Move, Plus, Minus, RotateCcw, User2 } from "lucide-react";
+import DroneIcon from "./icons/DroneIcon";
 
 const BuildingView: React.FC = () => {
   const { devices, detections, alerts, selectedFloor, setSelectedFloor } = useSentinel();
@@ -178,7 +178,7 @@ const BuildingView: React.FC = () => {
               </div>
               <div className="flex flex-col items-center">
                 <div className="flex items-center">
-                  <Drone className="h-4 w-4 text-sentinel-warning mr-1" />
+                  <DroneIcon className="h-4 w-4 text-sentinel-warning mr-1" />
                   <span>{floorDevices.filter(d => d.type === "drone").length}</span>
                 </div>
                 <span className="text-xs text-gray-400">Drones</span>
@@ -353,7 +353,7 @@ const BuildingView: React.FC = () => {
                         >
                           {device.type === "camera" && <Camera className="h-2 w-2" />}
                           {device.type === "audio" && <Mic className="h-2 w-2" />}
-                          {device.type === "drone" && <Drone className="h-2 w-2" />}
+                          {device.type === "drone" && <DroneIcon className="h-2 w-2" />}
                         </div>
                       </div>
                     );
@@ -421,7 +421,7 @@ const BuildingView: React.FC = () => {
                     className="h-12 w-12 rounded-full bg-black/50 flex items-center justify-center relative"
                     style={{ transform: `rotate(${-rotation}deg)` }}
                   >
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-3 w-1 bg-sentinel-alert rounded-full"></div>
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-3 w-1 bg-sentinel-alert mr-1"></div>
                     <div className="h-1 w-1 rounded-full bg-white"></div>
                     <div className="absolute text-xs text-white" style={{ top: '2px', left: 'calc(50% + 14px)' }}>E</div>
                     <div className="absolute text-xs text-white" style={{ top: '2px', left: 'calc(50% - 18px)' }}>W</div>

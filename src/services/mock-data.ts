@@ -1,4 +1,4 @@
-import { Alert, AlertLevel, AlertType, BuildingData, Detection, Device, DeviceStatus, Location, MeshNodeData } from "@/types/sentinel-types";
+import { Device, Detection, Alert, MeshNodeData } from "@/types/sentinel-types";
 
 // Building layout data
 export const buildingData: BuildingData = {
@@ -426,7 +426,7 @@ export function generateRandomDetection(): Detection {
   const randomDeviceId = deviceIds[Math.floor(Math.random() * deviceIds.length)];
   const device = mockDevices.find(d => d.id === randomDeviceId)!;
   
-  const detectionTypes: DetectionType[] = ["person", "weapon", "movement", "sound"];
+  const detectionTypes = ["person", "weapon", "movement", "sound"];
   const randomType = detectionTypes[Math.floor(Math.random() * detectionTypes.length)];
   
   // Define details based on detection type

@@ -1,10 +1,10 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Bell, CheckCircle, Clock, Filter, MapPin, Shield, Camera, Mic, Drone, Search } from "lucide-react";
-import { Alert } from "@/types/sentinel-types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bell, AlertTriangle, Shield, Calendar, Clock, ArrowUpRight, X, Filter, Camera, Mic, User, Layers3, Search } from "lucide-react";
+import DroneIcon from "./icons/DroneIcon";
 
 const AlertsView: React.FC = () => {
   const { alerts, acknowledgeAlert } = useSentinel();
@@ -12,59 +12,42 @@ const AlertsView: React.FC = () => {
   const [filterLevel, setFilterLevel] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
   
-  // Filter alerts based on criteria
   const filteredAlerts = alerts.filter(alert => {
-    // Filter by acknowledged status
     if (filterType === "acknowledged" && !alert.acknowledged) return false;
     if (filterType === "unacknowledged" && alert.acknowledged) return false;
     
-    // Filter by alert type
     if (filterType === "threat" && alert.type !== "threat") return false;
     if (filterType === "audio" && alert.type !== "audio") return false;
     if (filterType === "system" && alert.type !== "system") return false;
     
-    // Filter by alert level
     if (filterLevel && alert.level !== filterLevel) return false;
     
-    // Filter by search text
     if (searchText && !alert.message.toLowerCase().includes(searchText.toLowerCase())) return false;
     
     return true;
   });
   
-  // Sort alerts by timestamp (newest first) and acknowledged status
   const sortedAlerts = [...filteredAlerts].sort((a, b) => {
-    // Unacknowledged alerts first
     if (a.acknowledged !== b.acknowledged) {
       return a.acknowledged ? 1 : -1;
     }
-    // Then sort by timestamp (newest first)
     return b.timestamp.getTime() - a.timestamp.getTime();
   });
   
-  // Count alert types
   const threatCount = alerts.filter(a => a.type === "threat").length;
   const audioCount = alerts.filter(a => a.type === "audio").length;
   const systemCount = alerts.filter(a => a.type === "system").length;
   
-  // Count alert levels
   const criticalCount = alerts.filter(a => a.level === "critical").length;
   const highCount = alerts.filter(a => a.level === "high").length;
   const mediumCount = alerts.filter(a => a.level === "medium").length;
   const lowCount = alerts.filter(a => a.level === "low").length;
   
-  // Count acknowledged status
   const unacknowledgedCount = alerts.filter(a => !a.acknowledged).length;
   const acknowledgedCount = alerts.filter(a => a.acknowledged).length;
   
-  // Format timestamp
-  const formatTime = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    }).format(date);
+  const formatTime = (date: Date): string => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   return (
@@ -113,7 +96,6 @@ const AlertsView: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {/* Alert List */}
         <Card className="bg-sentinel-dark border-sentinel-purple/20 lg:col-span-2 xl:col-span-3">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg flex items-center">
@@ -158,9 +140,7 @@ const AlertsView: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Alert Filters and Stats */}
         <div className="space-y-6">
-          {/* Priority Filters */}
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardHeader>
               <CardTitle className="text-lg">Alert Priority</CardTitle>
@@ -202,7 +182,6 @@ const AlertsView: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Status Filters */}
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardHeader>
               <CardTitle className="text-lg">Alert Status</CardTitle>
@@ -236,7 +215,6 @@ const AlertsView: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Critical alerts summary */}
           {criticalCount + highCount > 0 && (
             <Card className="bg-sentinel-alert/10 border-sentinel-alert">
               <CardContent className="p-4">
@@ -373,13 +351,12 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert, onAcknowledge }) => {
   const getSourceIcon = () => {
     if (!alert.deviceId) return null;
     
-    // The first part of the ID can tell us the device type
     if (alert.deviceId.startsWith('cam')) {
       return <Camera className="h-3 w-3 mr-1" />;
     } else if (alert.deviceId.startsWith('audio')) {
       return <Mic className="h-3 w-3 mr-1" />;
     } else if (alert.deviceId.startsWith('drone')) {
-      return <Drone className="h-3 w-3 mr-1" />;
+      return <DroneIcon className="h-3 w-3 mr-1" />;
     }
     return null;
   };

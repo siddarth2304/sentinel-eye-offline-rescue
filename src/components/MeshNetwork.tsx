@@ -1,19 +1,18 @@
-
 import React from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Network, Wifi, WifiOff, Camera, Mic, Drone, ServerCrash, AlertTriangle } from "lucide-react";
+import { Network, Wifi, WifiOff, Camera, Mic, ServerCrash, AlertTriangle } from "lucide-react";
+import DroneIcon from "./icons/DroneIcon";
+import CameraOffIcon from "./icons/CameraOffIcon";
 
 const MeshNetwork: React.FC = () => {
   const { meshNetwork, devices } = useSentinel();
   
-  // Calculate network health score
   const activeNodes = meshNetwork.filter(node => node.status === "active").length;
   const totalNodes = meshNetwork.length;
   const networkHealth = Math.round((activeNodes / totalNodes) * 100);
 
-  // Calculate average signal strength
   const avgSignalStrength = Math.round(
     meshNetwork.reduce((acc, node) => acc + node.signalStrength, 0) / meshNetwork.length
   );
@@ -27,7 +26,6 @@ const MeshNetwork: React.FC = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          {/* Network Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card className="bg-sentinel-dark border-sentinel-purple/20">
               <CardContent className="p-4">
@@ -117,12 +115,10 @@ const MeshNetwork: React.FC = () => {
             </Card>
           </div>
           
-          {/* Network Visualization */}
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardContent className="p-4">
               <h3 className="text-lg font-medium mb-4">Network Graph</h3>
               <div className="relative aspect-video bg-sentinel-dark/50 border border-sentinel-dark rounded-md overflow-hidden">
-                {/* Gateway nodes */}
                 {meshNetwork
                   .filter(node => node.type === "gateway")
                   .map((node, index) => (
@@ -137,7 +133,6 @@ const MeshNetwork: React.FC = () => {
                   ))
                 }
                 
-                {/* Relay nodes in a circle around gateway */}
                 {meshNetwork
                   .filter(node => node.type === "relay")
                   .map((node, index, arr) => {
@@ -157,11 +152,9 @@ const MeshNetwork: React.FC = () => {
                   })
                 }
                 
-                {/* Device nodes */}
                 {meshNetwork
                   .filter(node => node.type === "device")
                   .map((node, index, arr) => {
-                    // Position devices in an outer circle
                     const angle = (index / arr.length) * 2 * Math.PI;
                     const x = 50 + 40 * Math.cos(angle);
                     const y = 50 + 40 * Math.sin(angle);
@@ -178,7 +171,6 @@ const MeshNetwork: React.FC = () => {
                   })
                 }
                 
-                {/* Background grid */}
                 <div 
                   className="absolute inset-0 z-0"
                   style={{
@@ -195,7 +187,6 @@ const MeshNetwork: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Node List */}
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardContent className="p-4">
               <h3 className="text-lg font-medium mb-3">Network Nodes</h3>
@@ -243,7 +234,6 @@ const MeshNetwork: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Network Stats */}
           <Card className="bg-sentinel-dark border-sentinel-purple/20">
             <CardContent className="p-4">
               <h3 className="text-lg font-medium mb-3">Network Stats</h3>
@@ -297,7 +287,6 @@ const MeshNetwork: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Warning Card if there are inactive nodes */}
           {meshNetwork.some(node => node.status !== "active") && (
             <Card className="bg-sentinel-alert/10 border-sentinel-alert">
               <CardContent className="p-4">
@@ -357,11 +346,11 @@ const NetworkNode: React.FC<NetworkNodeProps> = ({ node, x, y, devices, meshNetw
     if (device) {
       switch (device.type) {
         case "camera":
-          return node.status === "active" ? <Camera className="h-3 w-3" /> : <CameraOff className="h-3 w-3" />;
+          return node.status === "active" ? <Camera className="h-3 w-3" /> : <CameraOffIcon className="h-3 w-3" />;
         case "audio":
           return <Mic className="h-3 w-3" />;
         case "drone":
-          return <Drone className="h-3 w-3" />;
+          return <DroneIcon className="h-3 w-3" />;
         default:
           return <Wifi className="h-3 w-3" />;
       }
@@ -370,12 +359,10 @@ const NetworkNode: React.FC<NetworkNodeProps> = ({ node, x, y, devices, meshNetw
     return <Wifi className="h-3 w-3" />;
   };
 
-  // Draw connections
   const connections = node.connections.map(connId => {
     const connectedNode = meshNetwork.find(n => n.id === connId);
     if (!connectedNode) return null;
     
-    // Find the connected node's position
     let connX = 50, connY = 50;
     
     if (connectedNode.type === "gateway") {
@@ -414,12 +401,10 @@ const NetworkNode: React.FC<NetworkNodeProps> = ({ node, x, y, devices, meshNetw
 
   return (
     <>
-      {/* Draw SVG lines for connections */}
       <svg className="absolute inset-0 h-full w-full z-0">
         {connections}
       </svg>
       
-      {/* Node */}
       <div 
         className={`absolute z-10 rounded-full flex items-center justify-center
           ${node.status === "active" 
@@ -439,7 +424,6 @@ const NetworkNode: React.FC<NetworkNodeProps> = ({ node, x, y, devices, meshNetw
         <span className="text-white">
           {getNodeIcon()}
         </span>
-        {/* Ping animation for active nodes */}
         {node.status === "active" && (
           <div className={`absolute rounded-full animate-ping opacity-75
             ${node.type === "gateway" 
@@ -452,7 +436,6 @@ const NetworkNode: React.FC<NetworkNodeProps> = ({ node, x, y, devices, meshNetw
         )}
       </div>
       
-      {/* Label for gateway and relay nodes */}
       {(node.type === "gateway" || node.type === "relay") && (
         <div 
           className="absolute z-10 text-xs text-sentinel-purple-light whitespace-nowrap"
@@ -490,11 +473,11 @@ const NodeListItem: React.FC<NodeListItemProps> = ({ node, devices, showWarning 
     if (device) {
       switch (device.type) {
         case "camera":
-          return node.status === "active" ? <Camera className="h-5 w-5 text-gray-400" /> : <CameraOff className="h-5 w-5 text-sentinel-alert" />;
+          return node.status === "active" ? <Camera className="h-5 w-5 text-gray-400" /> : <CameraOffIcon className="h-5 w-5 text-sentinel-alert" />;
         case "audio":
           return <Mic className="h-5 w-5 text-gray-400" />;
         case "drone":
-          return <Drone className="h-5 w-5 text-gray-400" />;
+          return <DroneIcon className="h-5 w-5 text-gray-400" />;
         default:
           return <Wifi className="h-5 w-5 text-gray-400" />;
       }

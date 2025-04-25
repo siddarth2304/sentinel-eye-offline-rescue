@@ -1,9 +1,9 @@
-
 import React, { useState } from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Drone, Battery, AlertTriangle, MapPin, Wifi, Crosshair, Layers } from "lucide-react";
+import { AlertTriangle, MapPin, Wifi, Crosshair, Layers } from "lucide-react";
+import DroneIcon from "./icons/DroneIcon";
 import { Progress } from "@/components/ui/progress";
 import { Device } from "@/types/sentinel-types";
 
@@ -45,7 +45,7 @@ const DroneSurveillance: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium flex items-center">
-              <Drone className="h-5 w-5 mr-2 text-sentinel-purple" />
+              <DroneIcon className="h-5 w-5 mr-2 text-sentinel-purple" />
               {activeDrone ? activeDrone.name : "No Drone Selected"}
             </h2>
             <Badge 
@@ -199,7 +199,7 @@ const DroneSurveillance: React.FC = () => {
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center">
-                <Drone className="h-16 w-16 text-gray-600 mb-4" />
+                <DroneIcon className="h-16 w-16 text-gray-600 mb-4" />
                 <div className="text-xl font-bold text-gray-400">No Drone Selected</div>
                 <div className="text-sm text-gray-500 mt-2">Select a drone from the list to view the feed</div>
               </div>
@@ -318,7 +318,7 @@ const DroneSurveillance: React.FC = () => {
                     <div className="flex items-center">
                       <div className="relative mr-3">
                         <div className="h-10 w-10 bg-sentinel-dark/50 rounded-full flex items-center justify-center">
-                          <Drone className={`h-5 w-5 ${
+                          <DroneIcon className={`h-5 w-5 ${
                             drone.status === "online" 
                               ? "text-sentinel-purple" 
                               : "text-sentinel-alert"
