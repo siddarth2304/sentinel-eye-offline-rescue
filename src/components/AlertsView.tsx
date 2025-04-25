@@ -1,9 +1,11 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, AlertTriangle, Shield, Calendar, Clock, ArrowUpRight, X, Filter, Camera, Mic, User, Layers3, Search } from "lucide-react";
+import { Bell, AlertTriangle, Shield, Calendar, Clock, ArrowUpRight, X, Filter, Camera, Mic, User, Layers3, Search, CheckCircle, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import DroneIcon from "./icons/DroneIcon";
 
 const AlertsView: React.FC = () => {
