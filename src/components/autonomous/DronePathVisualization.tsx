@@ -11,8 +11,13 @@ interface DronePathVisualizationProps {
   detectedThreats: Location[]; // Array of threat locations
 }
 
+// Define proper types for refs
+type LineRefType = React.MutableRefObject<THREE.Line | null>;
+type MeshRefType = React.MutableRefObject<THREE.Mesh | null>;
+type GroupRefType = React.MutableRefObject<THREE.Group | null>;
+
 const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
-  const lineRef = useRef<THREE.Line>(null);
+  const lineRef = useRef<THREE.Line>(null) as LineRefType;
   const geometry = useMemo(() => {
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     return lineGeometry;
@@ -33,7 +38,7 @@ const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
 };
 
 const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const droneRef = useRef<THREE.Mesh>(null);
+  const droneRef = useRef<THREE.Mesh>(null) as MeshRefType;
   
   useFrame(() => {
     if (droneRef.current) {
@@ -49,19 +54,19 @@ const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position
       <group position={[0, 0.1, 0]}>
         <mesh position={[0.2, 0, 0.2]}>
           <cylinderGeometry args={[0.1, 0.1, 0.02]} />
-          <meshStandardMaterial color="#666" />
+          <meshStandardMaterial color="#666666" />
         </mesh>
         <mesh position={[-0.2, 0, 0.2]}>
           <cylinderGeometry args={[0.1, 0.1, 0.02]} />
-          <meshStandardMaterial color="#666" />
+          <meshStandardMaterial color="#666666" />
         </mesh>
         <mesh position={[0.2, 0, -0.2]}>
           <cylinderGeometry args={[0.1, 0.1, 0.02]} />
-          <meshStandardMaterial color="#666" />
+          <meshStandardMaterial color="#666666" />
         </mesh>
         <mesh position={[-0.2, 0, -0.2]}>
           <cylinderGeometry args={[0.1, 0.1, 0.02]} />
-          <meshStandardMaterial color="#666" />
+          <meshStandardMaterial color="#666666" />
         </mesh>
       </group>
     </mesh>
@@ -87,7 +92,7 @@ const RoomMarker: React.FC<{
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[1, 0.1, 1]} />
         <meshStandardMaterial 
-          color={isScanned ? "#4ade8020" : "#94a3b820"} 
+          color={isScanned ? "#4ade80" : "#94a3b8"} 
           transparent={true}
           opacity={0.3} 
         />
@@ -97,7 +102,7 @@ const RoomMarker: React.FC<{
 };
 
 const ThreatMarker: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const markerRef = useRef<THREE.Group>(null);
+  const markerRef = useRef<THREE.Group>(null) as GroupRefType;
 
   useFrame(() => {
     if (markerRef.current) {
