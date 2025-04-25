@@ -11,16 +11,10 @@ interface DronePathVisualizationProps {
   detectedThreats: Location[]; // Array of threat locations
 }
 
-// Define proper types for refs
-type LineRefType = React.MutableRefObject<THREE.Line | null>;
-type MeshRefType = React.MutableRefObject<THREE.Mesh | null>;
-type GroupRefType = React.MutableRefObject<THREE.Group | null>;
-
 const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
-  const lineRef = useRef<THREE.Line>(null) as LineRefType;
+  const lineRef = useRef<THREE.LineSegments>(null);
   const geometry = useMemo(() => {
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-    return lineGeometry;
+    return new THREE.BufferGeometry().setFromPoints(points);
   }, [points]);
 
   useFrame(() => {
@@ -30,15 +24,15 @@ const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
   });
 
   return (
-    <line ref={lineRef}>
+    <lineSegments ref={lineRef}>
       <bufferGeometry attach="geometry" {...geometry} />
-      <lineBasicMaterial attach="material" color="#9b87f5" linewidth={2} />
-    </line>
+      <lineBasicMaterial attach="material" color="#9b87f5" />
+    </lineSegments>
   );
 };
 
 const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const droneRef = useRef<THREE.Mesh>(null) as MeshRefType;
+  const droneRef = useRef<THREE.Mesh>(null);
   
   useFrame(() => {
     if (droneRef.current) {
@@ -102,7 +96,7 @@ const RoomMarker: React.FC<{
 };
 
 const ThreatMarker: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const markerRef = useRef<THREE.Group>(null) as GroupRefType;
+  const markerRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     if (markerRef.current) {
