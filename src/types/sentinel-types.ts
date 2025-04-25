@@ -5,7 +5,7 @@ export type AlertLevel = "none" | "low" | "medium" | "high" | "critical";
 
 export type AlertType = "threat" | "audio" | "movement" | "system";
 
-export type DetectionType = "person" | "weapon" | "movement" | "sound";
+export type DetectionType = "person" | "weapon" | "movement" | "sound" | "thermal" | "medical";
 
 export interface Device {
   id: string;
@@ -75,4 +75,73 @@ export interface MeshNodeData {
   status: "active" | "inactive" | "degraded";
   connections: string[]; // IDs of connected nodes
   signalStrength: number; // percentage
+}
+
+// New interfaces for autonomous drone and AI tracking features
+export interface DroneSwarmData {
+  id: string;
+  name: string;
+  drones: string[]; // IDs of drones in swarm
+  mission: "surveillance" | "rescue" | "mapping" | "delivery";
+  status: "active" | "standby" | "returning";
+  coverageArea: {
+    floors: number[];
+    rooms: string[];
+  };
+}
+
+export interface PersonTrackingData {
+  id: string;
+  firstDetectedAt: Date;
+  lastSeenAt: Date;
+  confidence: number;
+  locations: {
+    location: Location;
+    timestamp: Date;
+  }[];
+  posture: "standing" | "sitting" | "walking" | "running" | "crouching" | "lying";
+  threat: boolean;
+  associatedWith?: string[]; // IDs of people this person is associated with
+  trackingPath: Location[];
+  deviceIds: string[]; // IDs of devices that have detected this person
+}
+
+export interface ThermalData {
+  id: string;
+  intensity: number; // 0-100
+  location: Location;
+  timestamp: Date;
+  deviceId: string;
+  size: "small" | "medium" | "large"; // size of heat signature
+}
+
+export interface DeliveryPackage {
+  id: string;
+  type: "medical" | "communication" | "water" | "food";
+  status: "loaded" | "in-transit" | "delivered";
+  destination: Location;
+  droneId?: string;
+}
+
+export interface BuildingMap3D {
+  id: string;
+  timestamp: Date;
+  floors: {
+    floor: number;
+    walls: {
+      start: Location;
+      end: Location;
+    }[];
+    obstacles: {
+      location: Location;
+      size: {
+        width: number;
+        height: number;
+        depth: number;
+      };
+      type: "furniture" | "debris" | "door" | "window" | "unknown";
+    }[];
+  }[];
+  exploredAreas: Location[];
+  unexploredAreas: Location[];
 }

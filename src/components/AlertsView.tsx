@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, AlertTriangle, Shield, Calendar, Clock, ArrowUpRight, X, Filter, Camera, Mic, User, Layers3, Search, CheckCircle, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import DroneIcon from "./icons/DroneIcon";
+import { Alert } from "@/types/sentinel-types";
 
 const AlertsView: React.FC = () => {
   const { alerts, acknowledgeAlert } = useSentinel();

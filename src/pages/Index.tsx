@@ -8,6 +8,8 @@ import DroneSurveillance from '@/components/DroneSurveillance';
 import MeshNetwork from '@/components/MeshNetwork';
 import AlertsView from '@/components/AlertsView';
 import BuildingView from '@/components/BuildingView';
+import DroneSwarmControl from '@/components/autonomous/DroneSwarmControl';
+import PersonTrackingSystem from '@/components/tracking/PersonTrackingSystem';
 
 const Index = () => {
   const [view, setView] = useState('dashboard');
@@ -24,6 +26,8 @@ const Index = () => {
           {view === 'drones' && <DroneSurveillance />}
           {view === 'mesh' && <MeshNetwork />}
           {view === 'alerts' && <AlertsView />}
+          {view === 'autonomous' && <DroneSwarmControl />}
+          {view === 'tracking' && <PersonTrackingSystem />}
         </main>
       </div>
     </SentinelProvider>

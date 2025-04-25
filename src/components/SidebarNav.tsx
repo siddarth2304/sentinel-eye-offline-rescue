@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom';
-import { cn } from "@/lib/utils";
-import { LayoutDashboard, AlertCircle, Camera, Network, Building2 } from "lucide-react";
+
+import React from "react";
+import { 
+  Camera, 
+  LayoutDashboard, 
+  Bell, 
+  Network, 
+  Cube, 
+  ArrowUpRight,
+  Users,
+  Map
+} from "lucide-react";
 import DroneIcon from "./icons/DroneIcon";
 
 interface SidebarNavProps {
@@ -10,34 +19,50 @@ interface SidebarNavProps {
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ view, setView }) => {
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: '3d', label: '3D View', icon: Building2 },
-    { id: 'cameras', label: 'Cameras', icon: Camera },
-    { id: 'drones', label: 'Drones', icon: DroneIcon },
-    { id: 'mesh', label: 'Mesh Network', icon: Network },
-    { id: 'alerts', label: 'Alerts', icon: AlertCircle },
+    { id: 'dashboard', icon: LayoutDashboard, name: "Dashboard" },
+    { id: '3d', icon: Cube, name: "3D View" },
+    { id: 'cameras', icon: Camera, name: "Cameras" },
+    { id: 'drones', icon: DroneIcon, name: "Drones" },
+    { id: 'autonomous', icon: Map, name: "Autonomous" },
+    { id: 'tracking', icon: Users, name: "Person Tracking" },
+    { id: 'mesh', icon: Network, name: "Mesh Network" },
+    { id: 'alerts', icon: Bell, name: "Alerts" },
   ];
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-16 flex flex-col bg-sentinel-dark border-r border-sentinel-purple/20">
-      <div className="flex-1 flex flex-col py-4">
-        <nav className="flex-1 px-2 space-y-1">
-          {navItems.map((item) => (
+    <nav className="fixed left-0 top-0 bottom-0 w-16 bg-black border-r border-sentinel-purple/20 z-10">
+      <div className="flex flex-col items-center pt-6 h-full">
+        <div className="w-10 h-10 bg-sentinel-purple rounded-full flex items-center justify-center mb-8">
+          <ArrowUpRight className="h-5 w-5 text-white" />
+        </div>
+        
+        <div className="space-y-2 flex flex-col flex-1 items-center">
+          {navItems.map(item => (
             <button
               key={item.id}
-              className={cn(
-                "group flex items-center p-3 w-full rounded-md hover:bg-sentinel-purple/20",
-                view === item.id ? "bg-sentinel-purple/50" : "text-gray-400"
-              )}
               onClick={() => setView(item.id)}
+              className={`w-10 h-10 rounded-lg flex items-center justify-center relative 
+                ${view === item.id 
+                  ? 'bg-sentinel-purple text-white' 
+                  : 'text-gray-500 hover:text-white hover:bg-sentinel-dark'}
+              `}
+              title={item.name}
             >
-              <item.icon className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">{item.label}</span>
+              <item.icon className="h-5 w-5" />
+              {(item.id === 'autonomous' || item.id === 'tracking') && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-sentinel-purple rounded-full border-2 border-black"></div>
+              )}
             </button>
           ))}
-        </nav>
+        </div>
+
+        <div className="pb-6">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-500 hover:text-white cursor-pointer">
+            <Users className="h-5 w-5" />
+          </div>
+        </div>
       </div>
-    </aside>
+    </nav>
   );
 };
 
