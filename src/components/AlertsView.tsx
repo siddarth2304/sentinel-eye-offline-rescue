@@ -8,6 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import DroneIcon from "./icons/DroneIcon";
 import { Alert } from "@/types/sentinel-types";
 
+const formatTime = (date: Date): string => {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+};
+
 const AlertsView: React.FC = () => {
   const { alerts, acknowledgeAlert } = useSentinel();
   const [filterType, setFilterType] = useState<string | null>(null);
@@ -48,10 +52,6 @@ const AlertsView: React.FC = () => {
   const unacknowledgedCount = alerts.filter(a => !a.acknowledged).length;
   const acknowledgedCount = alerts.filter(a => a.acknowledged).length;
   
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
-
   return (
     <div className="p-6 space-y-6">
       <div>

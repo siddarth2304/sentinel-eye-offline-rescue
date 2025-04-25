@@ -8,7 +8,7 @@ import {
   Wifi, 
   Crosshair, 
   Layers,
-  BatteryMedium  // Replace Battery with a specific battery icon
+  BatteryMedium  // Using BatteryMedium instead of Battery
 } from "lucide-react";
 import DroneIcon from "./icons/DroneIcon";
 import { Progress } from "@/components/ui/progress";
@@ -116,8 +116,8 @@ const DroneSurveillance: React.FC = () => {
                   </div>
                   
                   {/* Battery indicator */}
-                  {/* <div className="absolute top-8 left-8 flex items-center">
-                    <Battery className="h-4 w-4 text-sentinel-purple mr-1" />
+                  <div className="absolute top-8 left-8 flex items-center">
+                    <BatteryMedium className="h-4 w-4 text-sentinel-purple mr-1" />
                     <div className="w-20 h-1.5 bg-black/60 rounded-full">
                       <div 
                         className={`h-full rounded-full ${
@@ -128,7 +128,7 @@ const DroneSurveillance: React.FC = () => {
                         style={{ width: `${activeDrone.battery || 0}%` }}
                       ></div>
                     </div>
-                  </div> */}
+                  </div>
                   
                   {/* Targeting reticle */}
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -193,7 +193,8 @@ const DroneSurveillance: React.FC = () => {
                   />
                 </div>
                 
-                <style jsx>{`
+                <style>
+                  {`
                   @keyframes scanline {
                     0% {
                       transform: translateY(0);
@@ -202,7 +203,8 @@ const DroneSurveillance: React.FC = () => {
                       transform: translateY(100vh);
                     }
                   }
-                `}</style>
+                  `}
+                </style>
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center">
@@ -219,7 +221,7 @@ const DroneSurveillance: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="text-sm text-gray-400">Battery Status</div>
                   <div className="flex items-center mt-1">
-                    <BatteryMedium className="h-4 w-4 mr-1 text-sentinel-info" /> {/* Use BatteryMedium */}
+                    <BatteryMedium className="h-4 w-4 mr-1 text-sentinel-info" />
                     <Progress 
                       value={activeDrone.battery || 0} 
                       className="mr-2" 

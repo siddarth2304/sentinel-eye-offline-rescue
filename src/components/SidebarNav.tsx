@@ -1,11 +1,10 @@
-
 import React from "react";
 import { 
   Camera, 
   LayoutDashboard, 
   Bell, 
   Network, 
-  Cube, 
+  Box3D, 
   ArrowUpRight,
   Users,
   Map
@@ -20,7 +19,7 @@ interface SidebarNavProps {
 const SidebarNav: React.FC<SidebarNavProps> = ({ view, setView }) => {
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, name: "Dashboard" },
-    { id: '3d', icon: Cube, name: "3D View" },
+    { id: '3d', icon: Box3D, name: "3D View" },
     { id: 'cameras', icon: Camera, name: "Cameras" },
     { id: 'drones', icon: DroneIcon, name: "Drones" },
     { id: 'autonomous', icon: Map, name: "Autonomous" },

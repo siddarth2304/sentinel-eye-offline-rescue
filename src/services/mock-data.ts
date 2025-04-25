@@ -437,36 +437,11 @@ export function generateRandomDetection(): Detection {
   const randomDeviceId = deviceIds[Math.floor(Math.random() * deviceIds.length)];
   const device = mockDevices.find(d => d.id === randomDeviceId)!;
   
-  const detectionTypes = ["person", "weapon", "movement", "sound"];
+  const detectionTypes: DetectionType[] = ["person", "weapon", "movement", "sound"];
   const randomType = detectionTypes[Math.floor(Math.random() * detectionTypes.length)];
   
   // Define details based on detection type
   let details: { [key: string]: any } = {};
-  switch (randomType) {
-    case "person":
-      details = { 
-        posture: ["standing", "sitting", "moving", "crouching"][Math.floor(Math.random() * 4)],
-        suspected_threat: Math.random() > 0.7
-      };
-      break;
-    case "weapon":
-      details = { 
-        type: ["handgun", "rifle", "knife", "unknown"][Math.floor(Math.random() * 4)]
-      };
-      break;
-    case "movement":
-      details = { 
-        speed: ["slow", "moderate", "fast"][Math.floor(Math.random() * 3)],
-        direction: ["north", "south", "east", "west"][Math.floor(Math.random() * 4)]
-      };
-      break;
-    case "sound":
-      details = { 
-        type: ["voices", "impact", "gunshot", "glass breaking", "footsteps"][Math.floor(Math.random() * 5)],
-        intensity: ["low", "moderate", "high"][Math.floor(Math.random() * 3)]
-      };
-      break;
-  }
   
   // Add some randomness to the location near the device
   const location: Location = {
