@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,7 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
   const [autonomousMode, setAutonomousMode] = useState(true);
   const [scannedRooms, setScannedRooms] = useState<string[]>([]);
   const [detectedThreats, setDetectedThreats] = useState<Location[]>([]);
+  const [thermalDetections, setThermalDetections] = useState<ThermalData[]>([]);
   const { toast } = useToast();
 
   const drones = devices.filter(device => device.type === "drone");
@@ -76,6 +78,42 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
     
     setActiveMission(mission);
     if (onMissionChange) onMissionChange(mission);
+    
+    // Initialize thermal detections when starting thermal mission
+    if (mission === 'thermal') {
+      setThermalDetections([
+        {
+          id: "thermal1",
+          intensity: 85,
+          location: {
+            x: Math.random() * 30,
+            y: 1,
+            z: Math.random() * 30,
+            floor: 1,
+            room: `room${Math.floor(Math.random() * 9) + 1}`
+          },
+          timestamp: new Date(),
+          deviceId: drones[0]?.id || "drone1",
+          size: "medium"
+        },
+        {
+          id: "thermal2",
+          intensity: 68,
+          location: {
+            x: Math.random() * 30,
+            y: 1,
+            z: Math.random() * 30,
+            floor: 1,
+            room: `room${Math.floor(Math.random() * 9) + 1}`
+          },
+          timestamp: new Date(),
+          deviceId: drones[0]?.id || "drone1",
+          size: "small"
+        }
+      ]);
+    } else {
+      setThermalDetections([]);
+    }
     
     toast({
       title: "Mission Started",

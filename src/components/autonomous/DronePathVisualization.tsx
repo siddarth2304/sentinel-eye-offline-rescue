@@ -12,7 +12,7 @@ interface DronePathVisualizationProps {
 }
 
 const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
-  const lineRef = useRef<THREE.Line>();
+  const lineRef = useRef<THREE.Line>(null);
   const geometry = useMemo(() => {
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     return lineGeometry;
@@ -33,7 +33,7 @@ const PathLine: React.FC<{ points: THREE.Vector3[] }> = ({ points }) => {
 };
 
 const DroneModel: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const droneRef = useRef<THREE.Mesh>();
+  const droneRef = useRef<THREE.Mesh>(null);
   
   useFrame(() => {
     if (droneRef.current) {
@@ -88,7 +88,7 @@ const RoomMarker: React.FC<{
         <boxGeometry args={[1, 0.1, 1]} />
         <meshStandardMaterial 
           color={isScanned ? "#4ade8020" : "#94a3b820"} 
-          transparent 
+          transparent={true}
           opacity={0.3} 
         />
       </mesh>
@@ -97,7 +97,7 @@ const RoomMarker: React.FC<{
 };
 
 const ThreatMarker: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  const markerRef = useRef<THREE.Group>();
+  const markerRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     if (markerRef.current) {
@@ -131,15 +131,15 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
 }) => {
   // Create simulated room positions
   const rooms = useMemo(() => [
-    { id: "room1", position: [-2, 0, -2] },
-    { id: "room2", position: [0, 0, -2] },
-    { id: "room3", position: [2, 0, -2] },
-    { id: "room4", position: [-2, 0, 0] },
-    { id: "room5", position: [0, 0, 0] },
-    { id: "room6", position: [2, 0, 0] },
-    { id: "room7", position: [-2, 0, 2] },
-    { id: "room8", position: [0, 0, 2] },
-    { id: "room9", position: [2, 0, 2] },
+    { id: "room1", position: [-2, 0, -2] as [number, number, number] },
+    { id: "room2", position: [0, 0, -2] as [number, number, number] },
+    { id: "room3", position: [2, 0, -2] as [number, number, number] },
+    { id: "room4", position: [-2, 0, 0] as [number, number, number] },
+    { id: "room5", position: [0, 0, 0] as [number, number, number] },
+    { id: "room6", position: [2, 0, 0] as [number, number, number] },
+    { id: "room7", position: [-2, 0, 2] as [number, number, number] },
+    { id: "room8", position: [0, 0, 2] as [number, number, number] },
+    { id: "room9", position: [2, 0, 2] as [number, number, number] },
   ], []);
 
   // Create path points for visualization
@@ -176,7 +176,7 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
         {rooms.map((room) => (
           <RoomMarker
             key={room.id}
-            position={room.position as [number, number, number]}
+            position={room.position}
             isScanned={scanCompleted.includes(room.id)}
             roomId={room.id}
           />
@@ -195,7 +195,7 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
               drone.location.x - 15,
               drone.location.y,
               drone.location.z - 15
-            ]}
+            ] as [number, number, number]}
           />
         ))}
         
@@ -207,7 +207,7 @@ const DronePathVisualization: React.FC<DronePathVisualizationProps> = ({
               threat.x - 15,
               threat.y,
               threat.z - 15
-            ]}
+            ] as [number, number, number]}
           />
         ))}
         
