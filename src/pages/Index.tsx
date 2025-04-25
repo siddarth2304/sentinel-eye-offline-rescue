@@ -1,13 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from 'react';
+import { SentinelProvider } from '@/contexts/SentinelContext';
+import Dashboard from '@/components/Dashboard';
+import SidebarNav from '@/components/SidebarNav';
+import CameraFeeds from '@/components/CameraFeeds';
+import DroneSurveillance from '@/components/DroneSurveillance';
+import MeshNetwork from '@/components/MeshNetwork';
+import AlertsView from '@/components/AlertsView';
+import BuildingView from '@/components/BuildingView';
 
 const Index = () => {
+  const [view, setView] = useState('dashboard');
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <SentinelProvider>
+      <div className="min-h-screen flex bg-sentinel-dark text-white">
+        <SidebarNav view={view} setView={setView} />
+        
+        <main className="flex-1 ml-16 overflow-auto">
+          {view === 'dashboard' && <Dashboard />}
+          {view === '3d' && <BuildingView />}
+          {view === 'cameras' && <CameraFeeds />}
+          {view === 'drones' && <DroneSurveillance />}
+          {view === 'mesh' && <MeshNetwork />}
+          {view === 'alerts' && <AlertsView />}
+        </main>
       </div>
-    </div>
+    </SentinelProvider>
   );
 };
 
