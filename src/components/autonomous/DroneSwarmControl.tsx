@@ -1,8 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSentinel } from "@/contexts/SentinelContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -10,18 +8,15 @@ import {
   Package, 
   Navigation, 
   ThermometerSun, 
-  Shield, 
-  BatteryMedium, 
-  FileSearch,
-  Wifi,
+  User, 
+  BatteryMedium,
   WifiOff,
-  AlertTriangle,
-  User,
   Clock
 } from "lucide-react";
 import DroneIcon from "../icons/DroneIcon";
-import { Device, Location, PersonTrackingData, ThermalData } from "@/types/sentinel-types";
+import { Location, ThermalData } from "@/types/sentinel-types";
 import { useToast } from "@/hooks/use-toast";
+import DronePathVisualization from './DronePathVisualization';
 
 interface DroneSwarmControlProps {
   onMissionChange?: (mission: string) => void;
@@ -31,30 +26,43 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
   const { devices, selectedFloor, setSelectedFloor } = useSentinel();
   const [activeMission, setActiveMission] = useState<string | null>(null);
   const [autonomousMode, setAutonomousMode] = useState(true);
+  const [scannedRooms, setScannedRooms] = useState<string[]>([]);
+  const [detectedThreats, setDetectedThreats] = useState<Location[]>([]);
   const { toast } = useToast();
 
   const drones = devices.filter(device => device.type === "drone");
   const availableDrones = drones.filter(drone => drone.status === "online");
-  
-  // Mock thermal data that would come from the drones
-  const [thermalDetections, setThermalDetections] = useState<ThermalData[]>([
-    {
-      id: "thermal1",
-      intensity: 85,
-      location: { x: 12, y: 2, z: 15, floor: 1, room: "room2" },
-      timestamp: new Date(),
-      deviceId: "drone1",
-      size: "medium"
-    },
-    {
-      id: "thermal2",
-      intensity: 92,
-      location: { x: 25, y: 2, z: 22, floor: 2, room: "room7" },
-      timestamp: new Date(),
-      deviceId: "drone2",
-      size: "small"
+
+  useEffect(() => {
+    if (activeMission === 'mapping') {
+      const interval = setInterval(() => {
+        const unscannedRooms = Array.from({ length: 9 }, (_, i) => `room${i + 1}`)
+          .filter(room => !scannedRooms.includes(room));
+        
+        if (unscannedRooms.length > 0) {
+          const randomRoom = unscannedRooms[Math.floor(Math.random() * unscannedRooms.length)];
+          setScannedRooms(prev => [...prev, randomRoom]);
+          
+          if (Math.random() < 0.2) {
+            setDetectedThreats(prev => [...prev, {
+              x: Math.random() * 30,
+              y: 2,
+              z: Math.random() * 30,
+              floor: 1
+            }]);
+            
+            toast({
+              title: "Threat Detected",
+              description: `Potential threat detected in ${randomRoom}`,
+              variant: "destructive"
+            });
+          }
+        }
+      }, 2000);
+      
+      return () => clearInterval(interval);
     }
-  ]);
+  }, [activeMission, scannedRooms, toast]);
 
   const handleStartMission = (mission: string) => {
     if (availableDrones.length === 0) {
@@ -74,8 +82,6 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
       description: `Autonomous ${mission} mission initiated with ${availableDrones.length} drones.`,
       variant: "default"
     });
-    
-    // In a real app, this would dispatch the drones on their mission
   };
   
   const handleStopMission = () => {
@@ -102,7 +108,7 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-6">
       <Card className="bg-sentinel-dark border-sentinel-purple/20">
         <CardHeader>
           <CardTitle className="text-lg flex items-center">
@@ -117,6 +123,14 @@ const DroneSwarmControl: React.FC<DroneSwarmControlProps> = ({ onMissionChange }
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-6">
+            <DronePathVisualization
+              drones={drones}
+              scanCompleted={scannedRooms}
+              detectedThreats={detectedThreats}
+            />
+          </div>
+          
           <div className="mb-4">
             <p className="text-sm text-gray-400">
               {autonomousMode 
