@@ -81,6 +81,8 @@
 
 ---
 
+### Demo: https://youtu.be/xkdOfK7DOGo
+
 ## ✈️ Planned Hardware
 
 | Component           | Model / Type            | Purpose                          |
