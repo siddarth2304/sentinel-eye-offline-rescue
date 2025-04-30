@@ -1,149 +1,207 @@
-Sentinel-Eye
- 
-Sentinel-Eye is an innovative offline drone surveillance system designed for crisis scenarios, such as hostage situations with disabled CCTV and jammed Wi-Fi/cellular networks. Awarded 3rd Place at the Hackathon, it autonomously maps threats (people, weapons) in real-time, delivering critical intel to rescuers via a LoRa-based mesh network. Built with a robust tech stack, Sentinel-Eye leverages AI, 3D visualization, and swarm navigation to ensure resilience in network-denied environments.
-Features
-Core Functionality
 
-Autonomous Drone Surveillance: Deploys drones to scan environments (e.g., 1000 sq ft house) without GPS, using RTAB-Map for SLAM (Simultaneous Localization and Mapping).
-Real-Time Threat Detection: Identifies people (e.g., 24 detected) and weapons (e.g., guns, knives, 29 threats) with YOLOv9-like AI, mocked in MVP.
-3D Visualization: Renders interactive 3D models of scanned areas (walls, threats) using Three.js, displayed on a web dashboard.
-Offline Operation: Functions without internet, relying on a LoRa mesh network (simulated via JSON) for data relay across ~1km.
-Rapid Mapping: Reconstructs 3D layouts in ~3-10 minutes (3 drones, LiDAR) for unknown blueprints, e.g., a house with no prior floorplan.
+---
 
-Technical Features
+# 🛰️ Sentinel-Eye
 
-Sensor Simulation:
-LiDAR: Mocked Velodyne Puck Lite data for high-resolution point clouds (~10-20fps).
-Thermal Sensors: Simulated FLIR Lepton 3.5 for heat signature detection (~8.7Hz, 95% accuracy for people).
-RGB Cameras: Mocked Sony IMX219 for visual weapon detection (~30fps, 90% accuracy).
+**Sentinel-Eye** is an advanced **offline-capable drone surveillance system** built for high-risk crisis scenarios—such as hostage situations—where traditional surveillance infrastructure (CCTV, Wi-Fi, cellular) is compromised.  
 
+🏆 **Winner  at Krithoathon 3.0**, Sentinel-Eye autonomously maps environments, detects threats, and relays mission-critical data using a **LoRa-based mesh network**—ensuring real-time intel even in network-denied zones.
 
-AI Processing: Mocked YOLOv9 (95.7% mAP) on NVIDIA Jetson Nano (472 GFLOPS), processing thermal/RGB data at ~5-10fps.
-Mesh Network: Simulated LoRa mesh (10kbps, 1km range) via mockMeshData.json, visualizing drone connections as SVG nodes with golden links (#FFD700).
-Dashboard UI: Interactive React interface with:
-Metrics (e.g., “24 People, 8 Critical Alerts”) in sentinel-dark (#1A1F2C).
-Threat alerts (e.g., “Weapon detected”) in sentinel-alert (#EA384C).
-3D view (/autonomous) with green (#22C55E) and red (#EA384C) threat markers.
+---
 
+## 🚀 Key Features
 
-Scalability: Extensible to ROS-based drone swarms and OLSR routing for large-scale deployments.
+### 🔐 Core Functionality
 
-Tech Stack
-Frontend
+- **Autonomous Drone Surveillance**  
+  Scans structures like a 1000 sq ft house **without GPS** using **RTAB-Map SLAM** for 3D mapping.
 
-React (18.x): Core framework for dynamic UI (Index.tsx, Dashboard.tsx).
-TypeScript: Type-safe development for robust code.
-Three.js: 3D visualization of house layouts and threats (DronePathVisualization.tsx).
-@react-three/fiber, @react-three/drei: React bindings for Three.js, enabling OrbitControls.
-Tailwind CSS: Responsive styling with custom sentinel colors (sentinel-dark #1A1F2C, sentinel-purple #A855F7, sentinel-alert #EA384C, sentinel-green #22C55E, sentinel-blue #0EA5E9).
-React Router: Navigation (/, /autonomous, /mesh).
-Vite: Fast build tool, bundling assets for offline use (vite.config.ts).
+- **Real-Time Threat Detection**  
+  Identifies **people and weapons** (e.g., 24 people, 29 threats) using a **mocked YOLOv9-like AI pipeline**.
 
-Data & Processing
+- **3D Visualization**  
+  Interactive 3D renderings of environments and threats using **Three.js** on a web dashboard.
 
-mockMeshData.json: Simulates LiDAR, thermal, and RGB sensor data (e.g., {threat: "gun", location: {x: 18, y: 6, z: 18}}).
-YOLOv9 (Mocked): AI model for threat detection, planned for Jetson Nano with TensorRT.
-RTAB-Map (Planned): SLAM for 3D mapping, integrated with ROS in production.
+- **Offline Operation**  
+  Fully functional **without internet** via a **simulated LoRa mesh** (~1 km range).
 
-Communication
+- **Rapid Mapping**  
+  Generates 3D layouts in **3–10 minutes** using 3 drones equipped with simulated LiDAR.
 
-LoRa Mesh (Simulated): Mocked in MeshNetwork.tsx, planned with RFM95 transceivers and OLSR routing.
-Node.js/Express (Optional): Demo server (server.js) for receiving alerts, not required for offline MVP.
+---
 
-Hardware (Planned)
+### 🧠 Technical Highlights
 
-Drones: DJI Matrice 300 RTK with Pixhawk flight controller and ArduPilot.
-Companion Computer: NVIDIA Jetson Nano for onboard AI and SLAM.
-Sensors:
-LiDAR: Velodyne Puck Lite (300,000 points/s).
-Thermal: FLIR Lepton 3.5 (160x120, 8-14μm).
-RGB: Sony IMX219 (1080p, 30fps).
+#### 🔎 Sensor Simulation
 
+- **LiDAR**: Mocked Velodyne Puck Lite data (~10–20 FPS)  
+- **Thermal**: Simulated FLIR Lepton 3.5 (~8.7Hz, ~95% person detection accuracy)  
+- **RGB**: Mocked Sony IMX219 (~30 FPS, ~90% weapon detection accuracy)
 
-Communication: LoRa RFM95 transceivers (~1km range).
+#### 🧠 AI + Edge Processing
 
-Getting Started
-Prerequisites
+- Mocked **YOLOv9** (95.7% mAP) running on **Jetson Nano** (472 GFLOPS)  
+- Processes RGB and thermal data at ~5–10 FPS
 
-Node.js (v18+): For running the React dashboard.
-npm (v9+): For dependency management.
-Git: To clone the repository.
-Browser: Chrome/Firefox for optimal WebGL rendering.
+#### 🌐 Mesh Networking
 
-Installation
+- Simulated **LoRa mesh** (10 kbps, 1 km range) via `mockMeshData.json`  
+- SVG-based visualization of mesh topology using "golden links" (#FFD700)
 
-Clone the Repository:
+#### 🖥️ Dashboard UI (React)
+
+- Metrics like **“24 People, 8 Critical Alerts”** in **sentinel-dark** (`#1A1F2C`)
+- Threat alerts in **sentinel-alert** (`#EA384C`)
+- 3D model (/autonomous) with color-coded markers:
+  - ✅ Safe zones (`#22C55E`)
+  - 🚨 Threats (`#EA384C`)
+
+---
+
+## 🧰 Tech Stack
+
+### 💻 Frontend
+
+- **React 18.x** + **TypeScript**
+- **Three.js** with `@react-three/fiber` & `@react-three/drei`
+- **Tailwind CSS** (custom Sentinel palette)
+- **Vite** for fast, offline-ready builds
+- **React Router** for navigation (`/`, `/mesh`, `/autonomous`)
+
+### 📦 Data & Processing
+
+- `mockMeshData.json`: Simulates sensor + threat data  
+- **YOLOv9** (Mocked): Threat detection AI (targeting Jetson Nano w/ TensorRT)  
+- **RTAB-Map** (Planned): SLAM for mapping environments
+
+### 🔌 Communication
+
+- **Simulated LoRa Mesh**: via `MeshNetwork.tsx`, planning hardware with RFM95 modules  
+- Optional **Node.js/Express** server (`server.js`) for real-time alert reception
+
+---
+
+## ✈️ Planned Hardware
+
+| Component           | Model / Type            | Purpose                          |
+|---------------------|-------------------------|----------------------------------|
+| Drone               | DJI Matrice 300 RTK     | Autonomous flight                |
+| Flight Controller   | Pixhawk + ArduPilot     | Navigation & stability           |
+| Companion Computer  | NVIDIA Jetson Nano      | AI processing & SLAM             |
+| LiDAR               | Velodyne Puck Lite      | 3D point cloud generation        |
+| Thermal Sensor      | FLIR Lepton 3.5         | Heat-based detection             |
+| RGB Camera          | Sony IMX219             | Visual object recognition        |
+| Communication       | LoRa RFM95              | Mesh-based data relay (~1 km)    |
+
+---
+
+## 🛠️ Getting Started
+
+### 📋 Prerequisites
+
+- Node.js (v18+)
+- npm (v9+)
+- Git
+- Modern browser (Chrome/Firefox recommended)
+
+### ⚙️ Installation
+
+```bash
+# Clone the repo
 git clone https://github.com/yourusername/sentinel-eye.git
 cd sentinel-eye
 
-
-Install Dependencies:
+# Install dependencies
 npm install
 
-
-Run the Development Server:
+# Run locally
 npm run dev
+```
 
-Open http://localhost:8080 to view the dashboard.
+Open your browser at: [http://localhost:8080](http://localhost:8080)
 
-Verify Mock Data:Ensure src/assets/mockMeshData.json is present:
+### ✅ Verify Mock Data
+
+Ensure mock data exists:
+
+```bash
 cat src/assets/mockMeshData.json | jq .
+```
 
+---
 
+## 📈 Usage Overview
 
-Usage
+| View               | Description                                      |
+|--------------------|--------------------------------------------------|
+| `/` (Dashboard)     | View live metrics and alerts                    |
+| `/mesh`             | Visualize drone LoRa mesh topology              |
+| `/autonomous`       | Explore 3D scanned environments with threat tags |
 
-Dashboard: View metrics (e.g., “24 People, 29 Threats”) and alerts (Dashboard.tsx).
-Mesh Network: Check drone connections in SVG (MeshNetwork.tsx, /mesh).
-3D Visualization: Explore 3D house model with threat markers (DronePathVisualization.tsx, /autonomous).
-Offline Mode: Runs entirely locally, no internet required.
+---
 
-Project Structure
+## 🗂️ Project Structure
+
+```
 sentinel-eye/
 ├── src/
-│   ├── assets/
-│   │   └── mockMeshData.json       # Mock sensor data
+│   ├── assets/                   # Sensor mock data
 │   ├── components/
-│   │   ├── Dashboard.tsx           # Metrics and alerts
-│   │   ├── MeshNetwork.tsx         # LoRa mesh visualization
-│   │   ├── DronePathVisualization.tsx # 3D view
-│   │   └── SidebarNav.tsx          # Navigation
-│   ├── context/
-│   │   └── SentinelContext.tsx     # Global state
-│   ├── App.tsx                     # Main app
-│   ├── Index.tsx                   # Entry point
-│   └── styles/
-│       └── tailwind.css            # Custom styles
-├── public/                         # Static assets
-├── server.js                       # Optional demo server
-├── vite.config.ts                  # Vite configuration
-├── tailwind.config.js              # Tailwind settings
-├── package.json                    # Dependencies
-└── README.md                       # This file
+│   │   ├── Dashboard.tsx         # Metrics & alerts UI
+│   │   ├── MeshNetwork.tsx       # Mesh network visualization
+│   │   ├── DronePathVisualization.tsx  # 3D scene
+│   │   └── SidebarNav.tsx
+│   ├── context/                  # Global state
+│   ├── styles/                   # Tailwind custom styles
+│   └── App.tsx / Index.tsx
+├── public/                       # Static files
+├── server.js                     # Optional Express server
+├── vite.config.ts / tailwind.config.js
+└── package.json / README.md
+```
 
-Future Enhancements
+---
 
-Real Sensors: Integrate LiDAR (Velodyne), thermal (FLIR), and RGB (Sony) with ROS.
-AI Deployment: Run YOLOv9 on Jetson Nano with TensorRT for ~10fps inference.
-Dynamic Mesh: Implement OLSR routing for LoRa mesh with RFM95 transceivers.
-Enhanced 3D: Use Open3D for real-time meshing of point clouds.
-Swarm Coordination: Add ArduPilot for multi-drone navigation.
+## 🧭 Roadmap
 
-Contributing
+- ✅ MVP with mocked data and offline dashboard  
+- 🔜 **ROS integration** with real LiDAR + FLIR sensors  
+- 🔜 **Jetson Nano deployment** with TensorRT-optimized YOLO  
+- 🔜 **Live SLAM** using RTAB-Map + Open3D  
+- 🔜 **OLSR routing** for scalable drone swarms  
+- 🔜 **Full autonomous navigation** via ArduPilot stack
 
-Fork the repository.
-Create a branch (git checkout -b feature/your-feature).
-Commit changes (git commit -m 'Add your feature').
-Push to the branch (git push origin feature/your-feature).
-Open a pull request.
+---
 
-License
-MIT License
-Acknowledgments
+## 🤝 Contributing
 
-Hackathon organizers and judges for the 3rd Place award.
-Team for their dedication in building Sentinel-Eye.
-Open-source communities: React, Three.js, Tailwind CSS.
+1. Fork the repo  
+2. Create a new branch  
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. Commit your changes  
+   ```bash
+   git commit -m "Add your feature"
+   ```
+4. Push and open a pull request
 
+---
 
-Sentinel-Eye: Empowering rescuers with offline, AI-driven surveillance. 🌐🔍
+## 📄 License
+
+[MIT License](LICENSE)
+
+---
+
+## 🙌 Acknowledgments
+
+- Hackathon organizers & judges for recognizing Sentinel-Eye  
+- Dev team for outstanding execution under time pressure  
+- Open source projects: React, Three.js, Tailwind CSS, ROS, YOLO  
+
+---
+
+> **Sentinel-Eye**: Empowering first responders with AI-driven, network-free situational awareness. 🌐🛸
+
+---
